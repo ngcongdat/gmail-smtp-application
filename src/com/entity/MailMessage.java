@@ -10,15 +10,15 @@ package com.entity;
  * @author tiny
  */
 public class MailMessage {
-    
+
     // Declare instance
     private String from, message, subject, to;
-    
+
     // Contructors
     public MailMessage() {
-        
+
     }
-    
+
     public MailMessage(String from, String message, String subject, String to) {
         this.from = from;
         this.message = message;
@@ -58,5 +58,5 @@ public class MailMessage {
     public void setTo(String to) {
         this.to = to;
     }
-    
+
 }

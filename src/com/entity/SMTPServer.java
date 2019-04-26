@@ -10,21 +10,21 @@ package com.entity;
  * @author tiny
  */
 public class SMTPServer {
-    
+
     // Declare instance
     private String authentication, port, server;
 
     // Contructors
     public SMTPServer() {
-        
+
     }
-    
+
     public SMTPServer(String authentication, String port, String server) {
         this.authentication = authentication;
         this.port = port;
         this.server = server;
     }
-    
+
     // Setter - Getter
     public String getAuthentication() {
         return authentication;
@@ -49,6 +49,5 @@ public class SMTPServer {
     public void setServer(String server) {
         this.server = server;
     }
-    
-    
+
 }

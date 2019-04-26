@@ -5,6 +5,8 @@
  */
 package com.ui;
 
+import com.business.MyMail;
+import com.entity.MailMessage;
 import com.entity.SMTPServer;
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -13,10 +15,14 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
@@ -30,12 +36,12 @@ public class MyEmail implements ActionListener {
 
     JLabel lFrom, lTo, lSubject, lServer, lUsername, lPassword, lMessage;
     JTextField tfFrom, tfTo, tfSubject, tfUsername;
-    JComboBox<SMTPServer> cbServer;
+    JComboBox cbServer;
     JPasswordField pfPassword;
     JTextArea taMessage;
     JButton bSend;
     JPanel pnlTop;
-    
+
     GridBagConstraints gbc = new GridBagConstraints();
 
     public void createAndShowGUI() {
@@ -154,22 +160,71 @@ public class MyEmail implements ActionListener {
         pfPassword = new JPasswordField();
 
         // Init combobox
-        cbServer = new JComboBox<>();
+        String[] server = {"smtp.gmail.com(SSL)", "smtp.gmail.com(TLS)"};
+        cbServer = new JComboBox(server);
 
         // Init text area
         bSend = new JButton("Send E-Mail");
+        bSend.addActionListener(this);
 
         // Init text area
         taMessage = new JTextArea();
         taMessage.setRows(8);
         taMessage.setLineWrap(true);
         taMessage.setWrapStyleWord(true);
-        
+
     }
 
     @Override
     public void actionPerformed(ActionEvent ae) {
-        
+        String from = tfFrom.getText();
+        String to = tfTo.getText();
+        String subject = tfSubject.getText();
+        String username = tfUsername.getText();
+        String password = new String(pfPassword.getPassword());
+        String message = taMessage.getText();
+
+        boolean validate = validateInfo(from, to, subject, username, password, message);
+
+        if (!validate) {
+            return;
+        }
+
+        if (ae.getSource() == bSend) {
+            
+        }
     }
 
+    // Check null infomation
+    private boolean validateInfo(String from, String to, String subject, String username, String password, String message) {
+        ArrayList<String> errorsArr = new ArrayList<>();
+
+        if (from.equals("")) {
+            errorsArr.add("From address is not null");
+        }
+        if (to.equals("")) {
+            errorsArr.add("To address is not null");
+        }
+        if (subject.equals("")) {
+            errorsArr.add("Subject is not null");
+        }
+        if (username.equals("")) {
+            errorsArr.add("Username is not null");
+        }
+        if (password.equals("")) {
+            errorsArr.add("Password is not null");
+        }
+        if (message.equals("")) {
+            errorsArr.add("Message is not null");
+        }
+        if (errorsArr.size() > 0) {
+            String errors = "";
+            for (int i = 0; i < errorsArr.size(); i++) {
+                errors = (errors + errorsArr.get(i) + "\n");
+            }
+            JOptionPane.showMessageDialog(null, errors, "Missing Info", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        return true;
+    }
 }

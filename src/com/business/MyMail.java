@@ -17,47 +17,46 @@ import javax.mail.internet.MimeMessage;
  * @author tiny
  */
 public class MyMail {
-    
-    public Session getMailSession (SMTPServer mailServer, String from, String password) {
-        
+
+    public Session getMailSession(SMTPServer mailServer, String from, String password) {
+
         Properties props = new Properties();
         props.put("mail.smtp.host", mailServer.getServer());
         props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.socketFactory.host", mailServer.getPort());
+        props.put("mail.smtp.socketFactory.port", mailServer.getPort());
         props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         props.put("mail.smtp.auth", "true");
-        
+
         // Get the Session Object
         Session session = Session.getInstance(props,
-            new javax.mail.Authenticator() {
-                protected PasswordAuthentication getPasswordAuthentication() {
+                new javax.mail.Authenticator() {
+            protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(from, password);
             }
         });
         return session;
-        
+
     }
-    
-    public boolean sendMail (MailMessage mm, Session session) throws Exception {
+
+    public boolean sendMail(MailMessage mm, Session session) throws Exception {
         // Create a default MimeMessenge object
         Message message = new MimeMessage(session);
-        
+
         // Set From: header field of the header.
-         message.setFrom(new InternetAddress(mm.getFrom()));
+        message.setFrom(new InternetAddress(mm.getFrom()));
 
-         // Set To: header field of the header.
-         message.setRecipients(Message.RecipientType.TO,
-         InternetAddress.parse(mm.getTo()));
+        // Set To: header field of the header.
+        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(mm.getTo()));
 
-         // Set Subject: header field
-         message.setSubject(mm.getSubject());
+        // Set Subject: header field
+        message.setSubject(mm.getSubject());
 
-         // Now set the actual message
-         message.setText(mm.getMessage());
+        // Now set the actual message
+        message.setText(mm.getMessage());
 
-         // Send message
-         Transport.send(message);
-         
-         return true;
+        // Send message
+        Transport.send(message);
+
+        return true;
     }
 }
