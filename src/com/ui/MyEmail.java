@@ -180,7 +180,7 @@ public class MyEmail implements ActionListener {
         String from = tfFrom.getText();
         String to = tfTo.getText();
         String subject = tfSubject.getText();
-        String username = tfUsername.getText();
+        String username = tfUsername.getText().split("@")[0];
         String password = new String(pfPassword.getPassword());
         String message = taMessage.getText();
 
@@ -191,7 +191,33 @@ public class MyEmail implements ActionListener {
         }
 
         if (ae.getSource() == bSend) {
-            
+            MailMessage mm = new MailMessage(from, message, subject, to);
+            MyMail mMail = new MyMail();
+            SMTPServer mailServer;
+            boolean sent = false;
+            if (cbServer.getSelectedItem().toString().equals("smtp.gmail.com(SSL)")) {
+                mailServer = new SMTPServer("SSL", "465", "smtp.gmail.com");
+                try {
+                    sent = mMail.sendMail(mm, mMail.getMailSession(mailServer, username, password));
+                } catch (Exception ex) {
+                    Logger.getLogger(MyEmail.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                System.out.println("SSL");
+            }
+            if (cbServer.getSelectedItem().toString().equals("smtp.gmail.com(TLS)")) {
+                mailServer = new SMTPServer("TLS", "587", "smtp.gmail.com");
+                try {
+                    sent = mMail.sendMail(mm, mMail.getMailSession(mailServer, username, password));
+                } catch (Exception ex) {
+                    Logger.getLogger(MyEmail.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                System.out.println("TLS");
+            }
+            if (sent) {
+                JOptionPane.showMessageDialog(null, "Message sent to " + mm.getTo(), "Success Message", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Error! Please try again!", "Fail Message", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 

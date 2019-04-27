@@ -17,6 +17,10 @@ import javax.mail.internet.MimeMessage;
  * @author tiny
  */
 public class MyMail {
+    
+    public MyMail() {
+        
+    }
 
     public Session getMailSession(SMTPServer mailServer, String from, String password) {
 
