@@ -215,6 +215,12 @@ public class MyEmail implements ActionListener {
             }
             if (sent) {
                 JOptionPane.showMessageDialog(null, "Message sent to " + mm.getTo(), "Success Message", JOptionPane.INFORMATION_MESSAGE);
+                tfFrom.setText("");
+                tfTo.setText("");
+                tfSubject.setText("");
+                tfUsername.setText("");
+                pfPassword.setText("");
+                taMessage.setText("");
             } else {
                 JOptionPane.showMessageDialog(null, "Error! Please try again!", "Fail Message", JOptionPane.ERROR_MESSAGE);
             }

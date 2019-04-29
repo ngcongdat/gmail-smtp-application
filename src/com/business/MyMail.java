@@ -34,7 +34,7 @@ public class MyMail {
         Session session = Session.getInstance(props,
                 new javax.mail.Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(from, password);
+                return new PasswordAuthentication(from, password); //vpgwmvfbtolyrslr
             }
         });
         return session;
