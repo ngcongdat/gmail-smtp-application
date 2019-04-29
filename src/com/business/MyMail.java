@@ -28,7 +28,6 @@ public class MyMail {
         props.put("mail.smtp.host", mailServer.getServer());
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.smtp.socketFactory.port", mailServer.getPort());
-        props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         props.put("mail.smtp.auth", "true");
 
         // Get the Session Object

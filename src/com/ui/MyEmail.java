@@ -58,17 +58,19 @@ public class MyEmail implements ActionListener {
 
         // Set frame layout
         frame.setLayout(new BorderLayout());
+        
         // Init components
         initComponents();
 
-        addComponents();
+        // Add all components to panel top 
+        addComponentsToPanelTop();
 
         frame.add(pnlTop, BorderLayout.PAGE_START);
         frame.add(taMessage, BorderLayout.CENTER);
         frame.add(bSend, BorderLayout.PAGE_END);
     }
 
-    private void addComponents() {
+    private void addComponentsToPanelTop() {
 
         // Set layout for panel top
         pnlTop.setLayout(new GridBagLayout());
@@ -133,8 +135,6 @@ public class MyEmail implements ActionListener {
         gbc.gridx = 1;
         gbc.gridy = 5;
         pnlTop.add(pfPassword, gbc);
-
-        // Add text area
     }
 
     private void initComponents() {
@@ -180,7 +180,7 @@ public class MyEmail implements ActionListener {
         String from = tfFrom.getText();
         String to = tfTo.getText();
         String subject = tfSubject.getText();
-        String username = tfUsername.getText().split("@")[0];
+        String username = tfUsername.getText();
         String password = new String(pfPassword.getPassword());
         String message = taMessage.getText();
 
@@ -198,7 +198,7 @@ public class MyEmail implements ActionListener {
             if (cbServer.getSelectedItem().toString().equals("smtp.gmail.com(SSL)")) {
                 mailServer = new SMTPServer("SSL", "465", "smtp.gmail.com");
                 try {
-                    sent = mMail.sendMail(mm, mMail.getMailSession(mailServer, username, password));
+                    sent = mMail.sendMail(mm, mMail.getMailSession(mailServer, username.split("@")[0], password));
                 } catch (Exception ex) {
                     Logger.getLogger(MyEmail.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -207,7 +207,7 @@ public class MyEmail implements ActionListener {
             if (cbServer.getSelectedItem().toString().equals("smtp.gmail.com(TLS)")) {
                 mailServer = new SMTPServer("TLS", "587", "smtp.gmail.com");
                 try {
-                    sent = mMail.sendMail(mm, mMail.getMailSession(mailServer, username, password));
+                    sent = mMail.sendMail(mm, mMail.getMailSession(mailServer, username.split("@")[0], password));
                 } catch (Exception ex) {
                     Logger.getLogger(MyEmail.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -223,34 +223,58 @@ public class MyEmail implements ActionListener {
 
     // Check null infomation
     private boolean validateInfo(String from, String to, String subject, String username, String password, String message) {
-        ArrayList<String> errorsArr = new ArrayList<>();
+        ArrayList<String> missInfoErrs = new ArrayList<>();
+        ArrayList<String> invalidateInfoErrs = new ArrayList<>();
 
+        // Check miss info of all field
         if (from.equals("")) {
-            errorsArr.add("From address is not null");
+            missInfoErrs.add("From address is not null!");
         }
         if (to.equals("")) {
-            errorsArr.add("To address is not null");
+            missInfoErrs.add("To address is not null!");
         }
         if (subject.equals("")) {
-            errorsArr.add("Subject is not null");
+            missInfoErrs.add("Subject is not null!");
         }
         if (username.equals("")) {
-            errorsArr.add("Username is not null");
+            missInfoErrs.add("Username is not null!");
         }
         if (password.equals("")) {
-            errorsArr.add("Password is not null");
+            missInfoErrs.add("Password is not null!");
         }
         if (message.equals("")) {
-            errorsArr.add("Message is not null");
+            missInfoErrs.add("Message is not null!");
         }
-        if (errorsArr.size() > 0) {
+        
+        if (missInfoErrs.size() > 0) {
             String errors = "";
-            for (int i = 0; i < errorsArr.size(); i++) {
-                errors = (errors + errorsArr.get(i) + "\n");
+            for (int i = 0; i < missInfoErrs.size(); i++) {
+                errors = (errors + missInfoErrs.get(i) + "\n");
             }
             JOptionPane.showMessageDialog(null, errors, "Missing Info", JOptionPane.WARNING_MESSAGE);
             return false;
         }
+        
+        // Check validate info
+        if(from.split("@").length < 2) {
+            invalidateInfoErrs.add("Invalid From address!");
+        }
+        if(to.split("@").length < 2) {
+            invalidateInfoErrs.add("Invalid To address!");
+        }
+        if(username.split("@").length < 2) {
+            invalidateInfoErrs.add("Invalid Username!");
+        }
+        if (invalidateInfoErrs.size() > 0) {
+            String errors = "";
+            for (int i = 0; i < invalidateInfoErrs.size(); i++) {
+                errors = (errors + invalidateInfoErrs.get(i) + "\n");
+            }
+            JOptionPane.showMessageDialog(null, errors + "Please check again!", "Invalid Data", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        
+        // If validate return true 
         return true;
     }
 }

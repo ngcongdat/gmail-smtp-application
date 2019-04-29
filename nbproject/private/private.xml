@@ -5,6 +5,7 @@
         <group>
             <file>file:/home/tiny/Assignment/PRJ311x_0101_FX_VN_Java_Swing/PRJ311x_0101_FX_VN_Adatncfx00499ssignment_1_datncfx00499/SendGmailSMTP/src/com/ui/Main.java</file>
             <file>file:/home/tiny/Assignment/PRJ311x_0101_FX_VN_Java_Swing/PRJ311x_0101_FX_VN_Adatncfx00499ssignment_1_datncfx00499/SendGmailSMTP/src/com/ui/MyEmail.java</file>
+            <file>file:/home/tiny/Assignment/PRJ311x_0101_FX_VN_Java_Swing/PRJ311x_0101_FX_VN_Adatncfx00499ssignment_1_datncfx00499/SendGmailSMTP/src/com/entity/MailMessage.java</file>
             <file>file:/home/tiny/Assignment/PRJ311x_0101_FX_VN_Java_Swing/PRJ311x_0101_FX_VN_Adatncfx00499ssignment_1_datncfx00499/SendGmailSMTP/src/com/business/MyMail.java</file>
         </group>
     </open-files>
