@@ -15,11 +15,13 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -27,6 +29,7 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.filechooser.FileSystemView;
 
 /**
  *
@@ -34,13 +37,15 @@ import javax.swing.JTextField;
  */
 public class MyEmail implements ActionListener {
 
-    JLabel lFrom, lTo, lSubject, lServer, lUsername, lPassword, lMessage;
-    JTextField tfFrom, tfTo, tfSubject, tfUsername;
+    JLabel lFrom, lTo, lSubject, lServer, lUsername, lPassword, lMessage, lFileChooser;
+    JTextField tfFrom, tfTo, tfSubject, tfUsername, tfFileChoose;
     JComboBox cbServer;
     JPasswordField pfPassword;
     JTextArea taMessage;
-    JButton bSend;
+    JButton bSend, bChoose;
     JPanel pnlTop;
+
+    JFileChooser fc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
 
     GridBagConstraints gbc = new GridBagConstraints();
 
@@ -58,7 +63,7 @@ public class MyEmail implements ActionListener {
 
         // Set frame layout
         frame.setLayout(new BorderLayout());
-        
+
         // Init components
         initComponents();
 
@@ -107,6 +112,10 @@ public class MyEmail implements ActionListener {
 
         gbc.gridx = 0;
         gbc.gridy = 6;
+        pnlTop.add(lFileChooser, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 8;
         pnlTop.add(lMessage, gbc);
 
         // All text field
@@ -135,6 +144,16 @@ public class MyEmail implements ActionListener {
         gbc.gridx = 1;
         gbc.gridy = 5;
         pnlTop.add(pfPassword, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 6;
+        pnlTop.add(tfFileChoose, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 7;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(0, 10, 5, 10);
+        pnlTop.add(bChoose, gbc);
     }
 
     private void initComponents() {
@@ -173,32 +192,40 @@ public class MyEmail implements ActionListener {
         taMessage.setLineWrap(true);
         taMessage.setWrapStyleWord(true);
 
+        // Init file choose
+        lFileChooser = new JLabel("Attach File:");
+        tfFileChoose = new JTextField(10);
+        bChoose = new JButton("Browse");
+        bChoose.addActionListener(this);
     }
 
     @Override
     public void actionPerformed(ActionEvent ae) {
-        String from = tfFrom.getText();
-        String to = tfTo.getText();
-        String subject = tfSubject.getText();
-        String username = tfUsername.getText();
-        String password = new String(pfPassword.getPassword());
-        String message = taMessage.getText();
-
-        boolean validate = validateInfo(from, to, subject, username, password, message);
-
-        if (!validate) {
-            return;
-        }
 
         if (ae.getSource() == bSend) {
+            String from = tfFrom.getText();
+            String to = tfTo.getText();
+            String subject = tfSubject.getText();
+            String username = tfUsername.getText();
+            String password = new String(pfPassword.getPassword());
+            String message = taMessage.getText();
+            String filePath = tfFileChoose.getText();
+
+            boolean validate = validateInfo(from, to, subject, username, password, message);
+
+            if (!validate) {
+                return;
+            }
+
             MailMessage mm = new MailMessage(from, message, subject, to);
             MyMail mMail = new MyMail();
             SMTPServer mailServer;
             boolean sent = false;
+
             if (cbServer.getSelectedItem().toString().equals("smtp.gmail.com(SSL)")) {
                 mailServer = new SMTPServer("SSL", "465", "smtp.gmail.com");
                 try {
-                    sent = mMail.sendMail(mm, mMail.getMailSession(mailServer, username.split("@")[0], password));
+                    sent = mMail.sendMail(mm, mMail.getMailSession(mailServer, username.split("@")[0], password), filePath);
                 } catch (Exception ex) {
                     Logger.getLogger(MyEmail.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -207,7 +234,7 @@ public class MyEmail implements ActionListener {
             if (cbServer.getSelectedItem().toString().equals("smtp.gmail.com(TLS)")) {
                 mailServer = new SMTPServer("TLS", "587", "smtp.gmail.com");
                 try {
-                    sent = mMail.sendMail(mm, mMail.getMailSession(mailServer, username.split("@")[0], password));
+                    sent = mMail.sendMail(mm, mMail.getMailSession(mailServer, username.split("@")[0], password),filePath);
                 } catch (Exception ex) {
                     Logger.getLogger(MyEmail.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -215,14 +242,21 @@ public class MyEmail implements ActionListener {
             }
             if (sent) {
                 JOptionPane.showMessageDialog(null, "Message sent to " + mm.getTo(), "Success Message", JOptionPane.INFORMATION_MESSAGE);
-                tfFrom.setText("");
-                tfTo.setText("");
-                tfSubject.setText("");
-                tfUsername.setText("");
-                pfPassword.setText("");
-                taMessage.setText("");
+//                tfFrom.setText("");
+//                tfTo.setText("");
+//                tfSubject.setText("");
+//                tfUsername.setText("");
+//                pfPassword.setText("");
+//                taMessage.setText("");
             } else {
                 JOptionPane.showMessageDialog(null, "Error! Please try again!", "Fail Message", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        if (ae.getSource() == bChoose) {
+            int choose = fc.showOpenDialog(null);
+            if (choose == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fc.getSelectedFile();
+                tfFileChoose.setText(selectedFile.getAbsolutePath());
             }
         }
     }
@@ -251,7 +285,7 @@ public class MyEmail implements ActionListener {
         if (message.equals("")) {
             missInfoErrs.add("Message is not null!");
         }
-        
+
         if (missInfoErrs.size() > 0) {
             String errors = "";
             for (int i = 0; i < missInfoErrs.size(); i++) {
@@ -260,15 +294,15 @@ public class MyEmail implements ActionListener {
             JOptionPane.showMessageDialog(null, errors, "Missing Info", JOptionPane.WARNING_MESSAGE);
             return false;
         }
-        
+
         // Check validate info
-        if(from.split("@").length < 2) {
+        if (from.split("@").length < 2) {
             invalidateInfoErrs.add("Invalid From address!");
         }
-        if(to.split("@").length < 2) {
+        if (to.split("@").length < 2) {
             invalidateInfoErrs.add("Invalid To address!");
         }
-        if(username.split("@").length < 2) {
+        if (username.split("@").length < 2) {
             invalidateInfoErrs.add("Invalid Username!");
         }
         if (invalidateInfoErrs.size() > 0) {
@@ -279,7 +313,7 @@ public class MyEmail implements ActionListener {
             JOptionPane.showMessageDialog(null, errors + "Please check again!", "Invalid Data", JOptionPane.WARNING_MESSAGE);
             return false;
         }
-        
+
         // If validate return true 
         return true;
     }

@@ -8,22 +8,26 @@ package com.business;
 import com.entity.MailMessage;
 import com.entity.SMTPServer;
 import java.util.Properties;
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 /**
  *
  * @author tiny
  */
 public class MyMail {
-    
+
     public MyMail() {
-        
+
     }
 
     public Session getMailSession(SMTPServer mailServer, String from, String password) {
-
         Properties props = new Properties();
         props.put("mail.smtp.host", mailServer.getServer());
         props.put("mail.smtp.starttls.enable", "true");
@@ -31,7 +35,7 @@ public class MyMail {
         props.put("mail.smtp.auth", "true");
 
         // Get the Session Object
-        Session session = Session.getInstance(props,
+        Session session = Session.getDefaultInstance(props,
                 new javax.mail.Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(from, password); //vpgwmvfbtolyrslr
@@ -41,7 +45,7 @@ public class MyMail {
 
     }
 
-    public boolean sendMail(MailMessage mm, Session session) throws Exception {
+    public boolean sendMail(MailMessage mm, Session session, String filePath) throws Exception {
         // Create a default MimeMessenge object
         Message message = new MimeMessage(session);
 
@@ -54,9 +58,24 @@ public class MyMail {
         // Set Subject: header field
         message.setSubject(mm.getSubject());
 
-        // Now set the actual message
-        message.setText(mm.getMessage());
+        // Creates message part
+        MimeBodyPart messageBodyPart = new MimeBodyPart();
+        messageBodyPart.setContent(mm.getMessage(), "text/html");
 
+        // Creates multi-part
+        Multipart multipart = new MimeMultipart();
+        multipart.addBodyPart(messageBodyPart);
+
+        // Adds attachments
+        MimeBodyPart attachPart = new MimeBodyPart();
+        attachPart.attachFile(filePath);
+        multipart.addBodyPart(attachPart);
+
+        // sets the multi-part as e-mail's content
+        message.setContent(multipart);
+
+        // Now set the actual message
+//        message.setText(mm.getMessage());
         // Send message
         Transport.send(message);
 
