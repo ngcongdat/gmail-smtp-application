@@ -67,9 +67,11 @@ public class MyMail {
         multipart.addBodyPart(messageBodyPart);
 
         // Adds attachments
-        MimeBodyPart attachPart = new MimeBodyPart();
-        attachPart.attachFile(filePath);
-        multipart.addBodyPart(attachPart);
+        if(filePath != "" && filePath != null) {
+            MimeBodyPart attachPart = new MimeBodyPart();
+            attachPart.attachFile(filePath);
+            multipart.addBodyPart(attachPart);
+        }
 
         // sets the multi-part as e-mail's content
         message.setContent(multipart);

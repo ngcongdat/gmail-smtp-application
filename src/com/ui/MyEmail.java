@@ -44,8 +44,7 @@ public class MyEmail implements ActionListener {
     JTextArea taMessage;
     JButton bSend, bChoose;
     JPanel pnlTop;
-
-    JFileChooser fc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+    JFileChooser fc;
 
     GridBagConstraints gbc = new GridBagConstraints();
 
@@ -168,12 +167,14 @@ public class MyEmail implements ActionListener {
         lUsername = new JLabel("Username:");
         lPassword = new JLabel("Password:");
         lMessage = new JLabel("Message:");
+        lFileChooser = new JLabel("Attach File:");
 
         // Init all text field
         tfFrom = new JTextField(20);
         tfSubject = new JTextField(20);
         tfTo = new JTextField(20);
         tfUsername = new JTextField(20);
+        tfFileChoose = new JTextField(10);
 
         // Init password field
         pfPassword = new JPasswordField();
@@ -185,6 +186,8 @@ public class MyEmail implements ActionListener {
         // Init text area
         bSend = new JButton("Send E-Mail");
         bSend.addActionListener(this);
+        bChoose = new JButton("Browse");
+        bChoose.addActionListener(this);
 
         // Init text area
         taMessage = new JTextArea();
@@ -193,10 +196,7 @@ public class MyEmail implements ActionListener {
         taMessage.setWrapStyleWord(true);
 
         // Init file choose
-        lFileChooser = new JLabel("Attach File:");
-        tfFileChoose = new JTextField(10);
-        bChoose = new JButton("Browse");
-        bChoose.addActionListener(this);
+        fc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
     }
 
     @Override
@@ -242,12 +242,12 @@ public class MyEmail implements ActionListener {
             }
             if (sent) {
                 JOptionPane.showMessageDialog(null, "Message sent to " + mm.getTo(), "Success Message", JOptionPane.INFORMATION_MESSAGE);
-//                tfFrom.setText("");
-//                tfTo.setText("");
-//                tfSubject.setText("");
-//                tfUsername.setText("");
-//                pfPassword.setText("");
-//                taMessage.setText("");
+                tfFrom.setText("");
+                tfTo.setText("");
+                tfSubject.setText("");
+                tfUsername.setText("");
+                pfPassword.setText("");
+                taMessage.setText("");
             } else {
                 JOptionPane.showMessageDialog(null, "Error! Please try again!", "Fail Message", JOptionPane.ERROR_MESSAGE);
             }
